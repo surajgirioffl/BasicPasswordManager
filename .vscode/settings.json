@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "cstdio": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "ostream": "cpp",
+        "cstdlib": "cpp",
+        "istream": "cpp",
+        "iostream": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "*.tcc": "cpp",
+        "memory": "cpp"
+    }
+}

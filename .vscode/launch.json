@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "g++.exe - Build and debug active file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false, //set to true to auto stops in main without any breakpoints
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true, //open the cmd to show the ouput and take input. I have make it false then i/o not working in debugging. so, I have changed to true.
+            //"Console": true,
+            //"type": "cppvsdbg", //changed by me but not debugging line by line. breakpoints are not supported
+            //"console": "integratedTerminal", //changed by me. see 'https://stackoverflow.com/questions/67001664/c-terminal-not-working-in-visual-studio-code'
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\My Application\\VS Code\\MinGw\\MinGW\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Fix pretty-printing for gdb",
+                    "text": "set charset UTF-8"
+                }
+            ],
+            "preLaunchTask": "C/C++: g++.exe build active file"
+        }
+    ]
+}
