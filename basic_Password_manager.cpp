@@ -78,15 +78,30 @@ public:
     /*input the access password from user and stores in the char* taken in argument. Take arguments of char* string and length of password */
     void inputAccessPassword(char *accessPassword, int length)
     {
-        int i;
-        cout << "\033[38;5;15m$ ";
-        for (i = 0; i < length; i++)
+        int i, error = 0;
+
+        while (true)
         {
-            char temp = getch(); // to read input from user
-            cout << "*";
-            accessPassword[i] = temp;
+            error = 0; // assigning 0 to error indicator. So, if there will be an error then it will increment
+            cout << "\033[38;5;15m$ ";
+            for (i = 0; i < length; i++)
+            {
+                char temp = getch(); // to read input from user
+                cout << "*";
+                accessPassword[i] = temp;
+                /* If user pressed enter without writing password*/
+                if (temp == '\r') // getch() take and store '\n' as '\r'
+                {
+                    cout << "\n\033[1;31mFatal Error: Invalid password............." << endl;
+                    cout << "\033[1;31mFatal Error: Write password of mentioned length i.e " << length << endl;
+                    error++; // incrementing the error indicator
+                    break;   // to break the inner loop i.e 'for' loop
+                }
+            }
+            if (error == 0) // in case of no error
+                break;
+            accessPassword[i] = '\0'; // adding NULL in last of string
         }
-        accessPassword[i] = '\0'; // adding NULL in last of string
     }
 
     /*input the password from user and stores in the char* taken in argument. Take arguments of char* string and take password from user until newline character encountered*/
@@ -293,7 +308,7 @@ class firstTime
             else
             {
                 cout << "\n\033[1;31mInvalid access password OR Access password doesn't match with previous one." << endl;
-                cout << "\033[1;34mWrite access password again" << endl;
+                cout << "\033[1;34mWrite access password again from beginning." << endl;
                 continue;
             }
         }
