@@ -715,30 +715,7 @@ class addNewData
                 }
                 structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
             }
-            else if (structMemberIndex == 7) // for mobile number
-            {
-                short counter = 0;
-                while (counter < 10)
-                {
-                    structVarCurrentDataMemberAddress[counter] = cin.get();
 
-                    if (*structVarCurrentDataMemberAddress = '\0') // if user don't want to write number or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
-                    {
-                        strcpy(structVarCurrentDataMemberAddress, "N/A");
-                        cout << "\033[1;36m[---NA---]" << endl;
-                    }
-
-                    if (!isdigit(structVarCurrentDataMemberAddress[counter])) /*isdigit() returns non-zero if argument is 0-9 else returns 0*/
-                    {
-                        cout << "\033[1;31mError: Invalid input. Only numbers are allowed (0-9)\033[0m" << endl;
-                        counter = 0; // restarting
-                        break;
-                    }
-                    counter++;
-                }
-                if (counter == 0) // means error in input of number
-                    continue;
-            }
             else
                 cin.getline(structVarCurrentDataMemberAddress, 100);
             // cin.getline(structureVar, 100); // here structureVar==var.varName is not true. structureVar is a simple string while var.xyz is the variable inside structure. So, we can't perform this operation
@@ -833,7 +810,7 @@ class addNewData
             /*we have to check twice for password*/
             {
                 char againPassword[100];
-                cout << "\n\033[1;32mWrite your password again: (\033[1;31mDon't write any command here.)" << endl;
+                cout << "\n\033[1;32mWrite your password again: \033[1;31m(Don't write any command here.)" << endl;
                 cout << "\033[38;5;15m$ ";
                 cin.getline(againPassword, 100);
 
@@ -868,6 +845,33 @@ class addNewData
                 cout << "\033[1;31mFatal Error: Invalid E-mail" << endl;
                 cout << "\033[1;34mWrite E-mail again:\033[0m" << endl;
                 continue;
+            }
+            else if (structMemberIndex == 7) // for mobile number. To check the entered mobile number is correct entered or not
+            {
+                /*actually we can check each character in number input and display error at the same time if character is not a number. but if we do so then command input (like prv, @, exit etc) will not work. So, we have to take input on the user choice and we will check the possibility of error after checking the possibility of commnads in input*/
+                short counter = 0;
+                short i = 0;
+                while (structVarCurrentDataMemberAddress[i++] != '\0')
+                {
+                    /*actually this block of code was written before input from cin.getline() but if we check the input character by character in case of number then the commands will not work. Due to which after complete input of number, we will check the the possibility of error in input of number*/
+                    // below commented lines are cut from above because of the same that mentioned in previous line */f
+                    //  structVarCurrentDataMemberAddress[counter] = cin.get();//cut from above
+                    //  if (*structVarCurrentDataMemberAddress == '\0') // if user don't want to write number or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
+                    //  {
+                    //      strcpy(structVarCurrentDataMemberAddress, "NA");
+                    //      cout << "\033[1;36m[---NA---]" << endl;
+                    //  }
+
+                    if (!isdigit(structVarCurrentDataMemberAddress[i])) /*isdigit() returns non-zero if argument is 0-9 else returns 0*/
+                    {
+                        cout << "\033[1;31mError: Invalid input. Only 10 digits are allowed and each of them must be in the range 0-9\033[0m" << endl;
+                        counter = 0; // restarting
+                        break;
+                    }
+                    counter++;
+                }
+                if (counter == 0 || counter > 10) // means error in input of number (greater than 10 means error in input of number)
+                    continue;
             }
             else // means user has written something
                 break;
