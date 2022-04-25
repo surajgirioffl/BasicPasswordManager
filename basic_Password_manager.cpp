@@ -673,6 +673,9 @@ class addNewData
         case 5:
             structVarCurrentDataMemberAddress = var.password;
             break;
+        case 6:
+            structVarCurrentDataMemberAddress = var.username;
+            break;
         case 7:
             structVarCurrentDataMemberAddress = var.mobileNumber;
             break;
