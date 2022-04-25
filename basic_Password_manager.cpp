@@ -52,6 +52,7 @@
 #include <windows.h>
 #include <winuser.h>
 #include <w32api.h>
+#include <unistd.h>
 using namespace std;
 int create_folder(char *path, char *new_folder_name);
 
@@ -417,7 +418,7 @@ class addNewData
     void inputTimeCommandMenu()
     {
         cout << "\n\033[1;31m:|:|:|:|:|:|:|:|:|:\033[4m\033[38;5;51mAPPLICABLE COMMANDS FOR THIS MENU\033[1;31m:|:|:|:|:|:|:|:|:|:\033[0m\033[1;31m" << endl;
-        cout << "=>>>  \033[4m\033[38;5;129mWrite \033[1;32mNA \033[38;5;129mif no info available\033[0m\033[1;31m" << endl;
+        cout << "=>>>  \033[4m\033[38;5;129mWrite \033[1;32mNA \033[38;5;129mif no info available OR simply \033[1;32mpress enter\033[0m\033[1;31m" << endl;
         cout << "=>>>  \033[4m\033[38;5;129mWrite \033[1;32mprv OR '@' \033[38;5;129mif you want to rewrite(modify) the previous info (rewind to last entered info)\033[0m\033[1;31m" << endl;
         cout << "=>>>  \033[4m\033[38;5;129mWrite \033[1;32mclear \033[38;5;129mto clear the display\033[0m\033[1;31m" << endl;
         cout << "=>>>  \033[4m\033[38;5;129mWrite \033[1;32mexit OR '#' \033[38;5;129mto exit properly without saving current info\033[0m\033[1;31m" << endl;
@@ -541,10 +542,45 @@ class addNewData
         return 1; // on successfull input
     }
 
-    /*returns true if NA allowed for the current type of data else false */
+    /*save the name of current structure member int 'char* dataMemberNameForUser' that should be displayed to user on the basis of passed index*/
+    void currentDataMemberNameForUser(short structMemberIndex, char *dataMemberNameForUser)
+    {
+        switch (structMemberIndex) // on the basis of index of member of structure
+        {
+        case 1:
+            strcpy(dataMemberNameForUser, "name of website or application"); // name
+            break;
+        case 2:
+            strcpy(dataMemberNameForUser, "URL of website if applicable"); // url
+            break;
+        case 3:
+            strcpy(dataMemberNameForUser, "category of website or application e.g programming, entertainment etc"); // category
+            break;
+        case 4:
+            strcpy(dataMemberNameForUser, "Email if applicable"); // email
+            break;
+        case 5:
+            strcpy(dataMemberNameForUser, "password"); // password
+            break;
+        case 6:
+            strcpy(dataMemberNameForUser, "username if applicable"); // username
+            break;
+        case 7:
+            strcpy(dataMemberNameForUser, "mobile number if applicable"); // mobile number
+            break;
+        case 8:
+            strcpy(dataMemberNameForUser, "full name of user"); // user full name
+            break;
+        case 9:
+            strcpy(dataMemberNameForUser, "more info about the website or application"); // info
+            break;
+        }
+    }
+
+    /*returns true if NA allowed for the type of data of current data member of structure else false */
     bool isNaAllowed(short structMemberIndex)
     {
-        switch (true)
+        switch (structMemberIndex) // on the basis of index of member of structure
         {
         case 1:
             return false; // name
@@ -575,263 +611,290 @@ class addNewData
             break;
         }
     }
+
     /**FUNCTION TO PERFROM ALL IN ONE INPUT OPERATIONS FOR EACH INPUT TYPE.
-     *typeName or prvTypeName is the name of type. e.g website name, mobile number, password etc.
+     *dataMemberNameForUser or dataMemberNameForUser is the name of type. e.g website name, mobile number, password etc.
      *typeIndex is the index of the type to display indexing to user. e.g index of "website name" (var = websiteName) is 01.
-     *varNumber is the variable number. e.g. websiteName have 1 varNumber because it's first variable.
+     *structMemberIndex is the variable number. e.g. websiteName have 1 structMemberIndex because it's first variable.
      *naAllowed is 'is NA allowed for current type'. or prvNaAllowed is 'is NA allowed for prv type'
      *
      *
      **returns 1 if user input the data successfully else returns 0 if user cancelled/exit the operation or due to other errors
      *
-     *(we will not take argument of 'extraFunctionRequired' and it's name. Because it's required only in case of url(varNumber==4) and email (varNumber=2)). So, we use varNumber and check the same.
-     *(rewind allowed in all type except first. So, why we take a special bool variable for rewindAllowed. Simply, we use the varNumber or typeIndex == 1 then rewind not allowed else allowed.)
+     *(we will not take argument of 'extraFunctionRequired' and it's name. Because it's required only in case of url(structMemberIndex==4) and email (structMemberIndex=2)). So, we use structMemberIndex and check the same.
+     *(rewind allowed in all type except first. So, why we take a special bool variable for rewindAllowed. Simply, we use the structMemberIndex or typeIndex == 1 then rewind not allowed else allowed.)
      */
-    /*
 
-
-//     int allInOneInputFunction(const int structMemberIndex) // short typeIndex, bool isNaAllowed, bool isPrvNaAllowed, const char* prvTypeName, bool extraFunctionRequired, const char *extraFunctionName
-//     {
-//         // user dataMemberNameForUser instead of typeName;
-//         const char *typeName = whatIsTypeName(structMemberIndex);
-//         /**why we use pointers here.
-//          *we can't use received variable name to access the data member. So, we have taken varNumber from calling function instead of varName.
-//          *because to access it we need the original data member name directly.
-//          *e.g we can't use var.userVariable. It's invalid because userVariable named member doesn't exist in my structure name infoType.
-//          *So, to solve this we use pointers concept.
-//          *we use the global(for this class) object of structure infoType i.e var to access the address of member variable.
-//          *and by address of member variable. We assign or input data on that address and it will work.
-//          */
-
-    //     /**My structure named 'infoType' members list with index
-    //      *1. char websiteName[100];
-    //      *2. char websiteUrl[100];
-    //      *3. char category[50];
-    //      *4. char email[100];
-    //      *5. char password[100];
-    //      *6. char username[20];
-    //      *7. char mobileNumber[11];
-    //      *8. char userFullName[50];
-    //      *9. char *moreInfo;//we use dynamic memory allocation for it. Because info size has no limit like above data
-    //      */
-
-    //     char *structVarCurrentDataMemberAddress; // stored address of data member of structure
-    //     // we can use if-else-if ladder here. But switch-case is alternative for easy case like here. i.e condition of checking only 1 variable i.e varNumber==x.
-
-    //     switch (varNumber)
-    //     {
-    //     case 1:
-    //         structVarCurrentDataMemberAddress = var.websiteName; // assigning address of structure data memeber
-    //         break;
-    //     case 2:
-    //         structVarCurrentDataMemberAddress = var.websiteUrl;
-    //         break;
-    //     case 3:
-    //         structVarCurrentDataMemberAddress = var.category;
-    //         break;
-    //     case 4:
-    //         structVarCurrentDataMemberAddress = var.email;
-    //         break;
-    //     case 5:
-    //         structVarCurrentDataMemberAddress = var.password;
-    //         break;
-    //     case 7:
-    //         structVarCurrentDataMemberAddress = var.mobileNumber;
-    //         break;
-    //     case 8:
-    //         structVarCurrentDataMemberAddress = var.userFullName;
-    //         break;
-    //     case 9:
-    //         structVarCurrentDataMemberAddress = var.moreInfo;
-    //         /*in this case we have to allocate memory because it's not static */
-    //         structVarCurrentDataMemberAddress = (char *)calloc(100, sizeof(char));
-    //         break;
-    //     }
-    //     while (true)
-    //     {
-    //         cout << "\033[1;32m" << typeIndex << ". Enter " << typeName << ":" << endl;
-    //         cout << "\033[38;5;15m$ ";
-    //         fflush(stdin);
-
-    //         if (varNumber == 9) // because we are using dynamic memory allocation for the same and we can realloc memory if size is greater than 100
-    //         {
-    //             // here we can't use cin.getline() because it required fixed size
-    //             short charCounter = 0; // character counter
-    //             short flag = 1;        // count how many times memory of 100*(sizeof(char)) allocated
-    //             /*now taking input from user*/
-    //             while (true)
-    //             {
-    //                 structVarCurrentDataMemberAddress[charCounter++] = cin.get();
-    //                 if (structVarCurrentDataMemberAddress[charCounter - 1] == '\0') //-1 because we have incremented the variable
-    //                     break;
-    //                 if (charCounter == (flag * 100) - 1) // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
-    //                     structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
-    //             }
-    //             structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
-    //         }
-    //         else if (varNumber == 7) // for mobile number
-    //         {
-    //             short counter = 0;
-    //             while (counter < 10)
-    //             {
-    //                 structVarCurrentDataMemberAddress[counter] = cin.get();
-    //                 if (!isdigit(structVarCurrentDataMemberAddress[counter])) /*isdigit() returns non-zero if argument is 0-9 else returns 0*/
-    //                 {
-    //                     cout << "\033[1;31mError: Invalid input. Only numbers are allowed (0-9)\033[0m" << endl;
-    //                     counter = 0; // restarting
-    //                     break;
-    //                 }
-    //                 counter++;
-    //             }
-    //             if (counter == 0) // means error in input of number
-    //                 continue;
-    //         }
-    //         else
-    //             cin.getline(structVarCurrentDataMemberAddress, 100);
-    //         // cin.getline(structureVar, 100); // here structureVar==var.varName is not true. structureVar is a simple string while var.xyz is the variable inside structure. So, we can't perform this operation
-
-    //         /*we have to check twice for password*/
-    //         if (varNumber == 5) // for password
-    //         {
-    //             char againPassword[100];
-    //             cout << "\n\033[1;32mWrite your password again:" << endl;
-    //             cin.getline(againPassword, 100);
-
-    //             if (strcmp(againPassword, structVarCurrentDataMemberAddress) == 0)
-    //                 cout << "\n\033[1;32mExcellent. Your password saved successfully........." << endl;
-
-    //             else
-    //             {
-    //                 cout << "\n\033[1;31mError: Password doesn't match with previous one." << endl;
-    //                 cout << "\033[1;34mWrite password again" << endl;
-    //                 continue;
-    //             }
-    //         }
-
-    //         /*now checking conditions*/
-    //         /*each block of if() of else if() must contains either 'break' or 'continue' statement. Because if control enters in it then it will not go in any other if-else-if and due to this we must need to break or continue the loop for next operation.*/
-    //         /*if (structVarCurrentDataMemberAddress[0] == 0)                                                                         // if user press enter without writing anything                                               // If user press enter without writing //it is better than (strcmp(var.websiteName,"\0")==0))
-    //             continue;                                                                                                          /* continue to inner while loop*/
-    //         else if (strcmp(structVarCurrentDataMemberAddress, "na") == 0 || strcmp(structVarCurrentDataMemberAddress, "NA") == 0) // if user don't have any info for current choice
-    //         {
-    //             if (varNumber == 1)
-    //             {
-    //                 cout << "\033[1;31mError: Website must have a name." << endl;
-    //                 cout << "\033[1;32mBut if you are inserting info for any specific reason then also it's not valid here. " << endl
-    //                      << "(see application user manual for more details.....)" << endl
-    //                      << "\033[38;5;141mPlease write again:)\033[0m\n"
-    //                      << endl;
-    //                 continue;
-    //             }
-    //             else if (varNumber == 2)
-    //             {
-    //                 cout << "\033[1;31mWarning: Website must have a url." << endl;
-    //                 cout << "\033[1;32mBut if you are inserting info for any application then it is valid here." << endl
-    //                      << " (see application user manual for more details..)\033[0m" << endl;
-    //                 strcpy(structVarCurrentDataMemberAddress, "N/A");
-    //                 break;
-    //             }
-    //             else if (isNaAllowed)
-    //             {
-    //                 strcpy(structVarCurrentDataMemberAddress, "N/A");
-    //                 break;
-    //             }
-    //             else
-    //             {
-    //                 cout << "\033[1;31mWarning: " << typeName << "can't left blank." << endl
-    //                      << "\033[38;5;141mPlease write again:)\033[0m" << endl;
-    //                 continue;
-    //             }
-    //         }
-    //         else if (strcmp(structVarCurrentDataMemberAddress, "@") == 0 || strcmp(structVarCurrentDataMemberAddress, "prv") == 0) // if user want to go to modify the previous written info
-    //         {
-    //             if (varNumber == 1) // it's only for 1st input type i.e website name
-    //             {
-    //                 cout << "\033[1;31mError: command for rewind to previous choice will not work here. Because it's the first choice.\033[0m" << endl;
-    //                 cout << "\033[1;34mWrite the website name again:)\n"
-    //                      << endl;
-    //                 continue;
-    //             }
-    //             cout << "\n\033[38;5;166mRewinding To Previous Input Type........." << endl;
-    //             cout << "\033[38;5;159mNow, Rewrite Or Modify the info again from here and onwards:)\n"
-    //                  << endl;
-    //             /*using recursion to go back to the previous choice*/
-    //                 if ( allInOneInputFunction(const char *typeName, typeIndex-1, varNumber-1, bool naAllowed, bool rewindAllowed, const char *prvFunctionForRewind, bool extraFunctionRequired, const char *extraFunctionName) // returns 1 on successfull input else 0
-    //                     continue;
-    //                 else
-    //                     return 0; // user cancelled the operation i.e exit
-    //         }
-    //         else if (strcmp(structVarCurrentDataMemberAddress, "clear") == 0) // to clear the display
-    //         {
-    //             system("cls");
-    //             inputTimeCommandMenu(); // to display the command menu after clear the display
-    //             continue;
-    //         }
-    //         else if (strcmp(structVarCurrentDataMemberAddress, "#") == 0 || strcmp(structVarCurrentDataMemberAddress, "exit") == 0) // if user want to exit without saving info
-    //             return 0;
-    //         else if (strcmp(structVarCurrentDataMemberAddress, "#cmd") == 0) // if user want to see the command menu
-    //         {
-    //             inputTimeCommandMenu(); // to display the command menu
-    //             continue;
-    //         }
-    //         else if (varNumber == 2) // for url
-    //         {
-    //             if (!isCorrectUrl(structVarCurrentDataMemberAddress)) // returns 0 if incorrect url
-    //             {
-    //                 cout << "\033[1;31mFatal Error: Invalid URL" << endl;
-    //                 cout << "\033[1;34mWrite URL again:\033[0m" << endl;
-    //                 continue;
-    //             }
-    //             break;
-    //         }
-    //         else if (varNumber == 4) // for email
-    //         {
-    //             if (isCorrectEmail(structVarCurrentDataMemberAddress)) // returns 1 if correct email else 0
-    //                 break;
-    //             cout << "\033[1;31mFatal Error: Invalid E-mail" << endl;
-    //             cout << "\033[1;34mWrite E-mail again:\033[0m" << endl;
-    //             continue;
-    //         }
-    //         else // means user has written something
-    //             break;
-    //     }
-    //     return 1; // on successfull input
-    // }
-
-    /*3. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int
-    inputCategory()
+    /*returns 1 for successfull input of current data else returns 0 on failure or user cancel of exit the operation*/
+    int allInOneInputFunction(const int structMemberIndex) // short typeIndex, bool isNaAllowed, bool isPrvNaAllowed, const char* dataMemberNameForUser, bool extraFunctionRequired, const char *extraFunctionName
     {
-    }
-    /*4. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int inputEmail()
-    {
+        /**why we use pointers here.
+         *we can't use received variable name to access the data member. So, we have taken structMemberIndex from calling function instead of varName.
+         *because to access it we need the original data member name directly.
+         *e.g we can't use var.userVariable. It's invalid because userVariable named member doesn't exist in my structure name infoType.
+         *So, to solve this we use pointers concept.
+         *we use the global(for this class) object of structure infoType i.e var to access the address of member variable.
+         *and by address of member variable. We assign or input data on that address and it will work.
+         */
+        /*we must need to give option to go for previous input type to user to modify the previous input type*/
+
+        /**My structure named 'infoType' members list with index
+         *1. char websiteName[100];
+         *2. char websiteUrl[100];
+         *3. char category[50];
+         *4. char email[100];
+         *5. char password[100];
+         *6. char username[20];
+         *7. char mobileNumber[11];
+         *8. char userFullName[50];
+         *9. char *moreInfo;//we use dynamic memory allocation for it. Because info size has no limit like above data
+         */
+
+        char *structVarCurrentDataMemberAddress; // stored address of data member of structure
+                                                 // user dataMemberNameForUser instead of dataMemberNameForUser;
+        char dataMemberNameForUser[100];         // for name to display to user for current data member
+        currentDataMemberNameForUser(structMemberIndex, dataMemberNameForUser);
+        // we can use if-else-if ladder here. But switch-case is alternative for easy case like here. i.e condition of checking only 1 variable i.e structMemberIndex==x.
+
+        switch (structMemberIndex) /*for the address of struct member on which operation will be performed currently*/
+        {
+        case 1:
+            structVarCurrentDataMemberAddress = var.websiteName; // assigning address of structure data member
+            break;
+        case 2:
+            structVarCurrentDataMemberAddress = var.websiteUrl;
+            break;
+        case 3:
+            structVarCurrentDataMemberAddress = var.category;
+            break;
+        case 4:
+            structVarCurrentDataMemberAddress = var.email;
+            break;
+        case 5:
+            structVarCurrentDataMemberAddress = var.password;
+            break;
+        case 7:
+            structVarCurrentDataMemberAddress = var.mobileNumber;
+            break;
+        case 8:
+            structVarCurrentDataMemberAddress = var.userFullName;
+            break;
+        case 9:
+            structVarCurrentDataMemberAddress = var.moreInfo;
+            /*in this case we have to allocate memory because it's not static */
+            structVarCurrentDataMemberAddress = (char *)calloc(100, sizeof(char));
+            break;
+        }
+
+        while (true)
+        {
+            cout << "\n\033[1;32m" << structMemberIndex << ". Enter " << dataMemberNameForUser << ":" << endl;
+            cout << "\033[38;5;15m$ ";
+            fflush(stdin);
+
+            if (structMemberIndex == 9) // because we are using dynamic memory allocation for the same and we can realloc memory if size is greater than 100
+            {
+                // here we can't use cin.getline() because it required fixed size
+                short charCounter = 0; // character counter
+                short flag = 1;        // count how many times memory of 100*(sizeof(char)) allocated
+                /*now taking input from user*/
+                while (true)
+                {
+                    structVarCurrentDataMemberAddress[charCounter++] = cin.get();
+
+                    if (*structVarCurrentDataMemberAddress = '\0') // if user don't want to write character or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
+                    {
+                        strcpy(structVarCurrentDataMemberAddress, "N/A");
+                        cout << "\033[1;36m[---NA---]" << endl;
+                    }
+
+                    if (structVarCurrentDataMemberAddress[charCounter - 1] == '\n') //-1 because we have incremented the variable
+                        break;
+                    if (charCounter == (flag * 100) - 1) // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
+                        structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
+                }
+                structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
+            }
+            else if (structMemberIndex == 7) // for mobile number
+            {
+                short counter = 0;
+                while (counter < 10)
+                {
+                    structVarCurrentDataMemberAddress[counter] = cin.get();
+
+                    if (*structVarCurrentDataMemberAddress = '\0') // if user don't want to write number or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
+                    {
+                        strcpy(structVarCurrentDataMemberAddress, "N/A");
+                        cout << "\033[1;36m[---NA---]" << endl;
+                    }
+
+                    if (!isdigit(structVarCurrentDataMemberAddress[counter])) /*isdigit() returns non-zero if argument is 0-9 else returns 0*/
+                    {
+                        cout << "\033[1;31mError: Invalid input. Only numbers are allowed (0-9)\033[0m" << endl;
+                        counter = 0; // restarting
+                        break;
+                    }
+                    counter++;
+                }
+                if (counter == 0) // means error in input of number
+                    continue;
+            }
+            else
+                cin.getline(structVarCurrentDataMemberAddress, 100);
+            // cin.getline(structureVar, 100); // here structureVar==var.varName is not true. structureVar is a simple string while var.xyz is the variable inside structure. So, we can't perform this operation
+
+            /*---------------------------------------------------------------------------*/
+
+            /*now checking conditions*/
+            /*each block of if() of else if() must contains either 'break' or 'continue' statement. Because if control enters in it then it will not go in any other if-else-if and due to this we must need to break or continue the loop for next operation.*/
+            /*if (structVarCurrentDataMemberAddress[0] == 0)                                                                         // if user press enter without writing anything                                               // If user press enter without writing //it is better than (strcmp(var.websiteName,"\0")==0))
+                continue;                                                                                                          /* continue to inner while loop*/
+            if (strcmp(structVarCurrentDataMemberAddress, "na") == 0 || strcmp(structVarCurrentDataMemberAddress, "NA") == 0 || strcmp(structVarCurrentDataMemberAddress, "\0") == 0) // if user don't have any info for current choice or user simply press enter without writing anything (it may be possible that that input type is compulsory)
+            {
+                if (structMemberIndex == 1)
+                {
+                    cout << "\033[1;31mError: Website/Application must have a name." << endl;
+                    cout << "\033[1;32mBut if you are inserting info for any specific reason then also it's not valid here. " << endl
+                         << "(see application user manual for more details.....)" << endl
+                         << "\033[38;5;141mPlease write again:)\033[0m\n"
+                         << endl;
+                    continue;
+                }
+                else if (structMemberIndex == 2)
+                {
+                    cout << "\033[1;31mWarning: Website must have a url." << endl;
+                    cout << "\033[1;32mBut if you are inserting info for any application then it is valid here." << endl
+                         << "(see application user manual for more details..)\033[0m" << endl;
+                    strcpy(structVarCurrentDataMemberAddress, "N/A");
+                    cout << "\033[1;36m[---NA---]" << endl;
+                    break;
+                }
+                else if (isNaAllowed(structMemberIndex))
+                {
+                    strcpy(structVarCurrentDataMemberAddress, "NA");
+                    cout << "\033[1;36m[---NA---]" << endl;
+                    break;
+                }
+                else
+                {
+                    cout << "\a\033[1;31mWarning: " << dataMemberNameForUser << " can't be empty." << endl //'\a' for produce an audiable alert
+                         << "\033[38;5;141mPlease write again:)\033[0m" << endl;
+                    continue;
+                }
+            }
+            else if (strcmp(structVarCurrentDataMemberAddress, "@") == 0 || strcmp(structVarCurrentDataMemberAddress, "prv") == 0) // if user want to go to modify the previous written info
+            {
+                if (structMemberIndex == 1) // it's only for 1st input type i.e website name
+                {
+                    cout << "\033[1;31mError: command for rewind to previous choice will not work here. Because it's the first choice.\033[0m" << endl;
+                    cout << "\033[1;34mWrite the website name again:)\n"
+                         << endl;
+                    continue;
+                }
+                cout << "\n\033[38;5;166mRewinding To Previous Input Type........." << endl;
+                /*just for fun..........s*/
+
+                int i = 0;
+                cout << "\033[38;5;155mLoading........";
+                while (i < 2)
+                {
+                    cout << "\033[1;37m" << ++i * 40 << "%"
+                         << "\b\b\b";
+                    sleep(1);
+                }
+                cout << "100%";
+                /*exit of fun........*/
+
+                cout
+                    << "\n\033[38;5;159mNow, Rewrite Or Modify the info again from here and onwards:)\n"
+                    << endl;
+                /*using recursion to go back to the previous choice*/
+                if (allInOneInputFunction(structMemberIndex - 1)) // returns 1 on successfull input else 0
+                    continue;                                     // restarting the input in that data member from which user returns back to the previous member for re input
+                else
+                    return 0; // user cancelled the operation i.e exit
+            }
+            else if (strcmp(structVarCurrentDataMemberAddress, "clear") == 0) // to clear the display
+            {
+                system("cls");
+                inputTimeCommandMenu(); // to display the command menu after clear the display
+                continue;
+            }
+            else if (strcmp(structVarCurrentDataMemberAddress, "#") == 0 || strcmp(structVarCurrentDataMemberAddress, "exit") == 0) // if user want to exit without saving info
+                return 0;
+            else if (strcmp(structVarCurrentDataMemberAddress, "#cmd") == 0) // if user want to see the command menu
+            {
+                inputTimeCommandMenu(); // to display the command menu
+                continue;
+            }
+            else if (structMemberIndex == 5) // special for password (an special condition)
+            /*below are the special lines of code from 'start' to 'end' for checking of password only*/
+            // start
+            /*we have to check twice for password*/
+            {
+                char againPassword[100];
+                cout << "\n\033[1;32mWrite your password again: (\033[1;31mDon't write any command here.)" << endl;
+                cout << "\033[38;5;15m$ ";
+                cin.getline(againPassword, 100);
+
+                if (strcmp(againPassword, structVarCurrentDataMemberAddress) == 0)
+                {
+                    cout << "\n\033[1;32mExcellent. Your password saved successfully........." << endl;
+                    break;
+                }
+
+                else
+                {
+                    cout << "\n\033[1;31mError: Password doesn't match with previous one." << endl;
+                    cout << "\033[1;34mWrite password again" << endl;
+                    continue;
+                }
+                // end
+            }
+            else if (structMemberIndex == 2) // for url
+            {
+                if (!isCorrectUrl(structVarCurrentDataMemberAddress)) // returns 0 if incorrect url
+                {
+                    cout << "\033[1;31mFatal Error: Invalid URL" << endl;
+                    cout << "\033[1;34mWrite URL again:\033[0m" << endl;
+                    continue;
+                }
+                break;
+            }
+            else if (structMemberIndex == 4) // for email
+            {
+                if (isCorrectEmail(structVarCurrentDataMemberAddress)) // returns 1 if correct email else 0
+                    break;
+                cout << "\033[1;31mFatal Error: Invalid E-mail" << endl;
+                cout << "\033[1;34mWrite E-mail again:\033[0m" << endl;
+                continue;
+            }
+            else // means user has written something
+                break;
+        }
+        return 1; // on successfull input
     }
 
-    /*5. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int inputPassword()
-    {
-    }
+    /*below lines are commented because I have performed all the operation of below uncompleted functions in a single above function*/
+    // /*3. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputCategory() {}
+    // /*4. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputEmail() {}
 
-    /*6. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int inputUsername()
-    {
-    }
+    // /*5. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputPassword() {}
 
-    /*7. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int inputMobileNumber()
-    {
-    }
+    // /*6. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputUsername() {}
 
-    /*8. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int inputFullName()
-    {
-    }
+    // /*7. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputMobileNumber() {}
 
-    /*09. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
-    int inputMoreInfo()
-    {
-    }
+    // /*8. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputFullName() {}
+
+    // /*09. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
+    // int inputMoreInfo() {}
 
     /*main function of this class*/
     /*take input from user. returns 0 if user cancelled the current input operation else returns 1 on successfully data entry from user*/
@@ -845,16 +908,23 @@ class addNewData
         /*input operations*/
         while (true)
         {
-            if (inputWebsiteName()) // returns 1 on successfull input else returns 0
+            // if (inputWebsiteName()) // returns 1 on successfull input else returns 0
+            // {
+            //     if (inputWebsiteUrl()) // returns 1 on successfull input else returns 0
+            //     {
+            //     }
+            //     else
+            //         return 0; // user cancelled the current input operation
+            // }
+            /*total number of structure members are 9. So, there index will 1 to 9. So, we have to take input from user in all data member i.e from 1 to 9*/
+            short structMemberIndex = 1;   // for index of the structure member
+            while (structMemberIndex < 10) // structMemberIndex must be from 0 to 9 here
             {
-                if (inputWebsiteUrl()) // returns 1 on successfull input else returns 0
-                {
-                }
-                else
-                    return 0; // user cancelled the current input operation
+                if (allInOneInputFunction(structMemberIndex++))
+                    continue; // on successfull input in current structure member
+                return 0;     // user cancelled/exit the operation or any error
             }
-            else
-                return 0; // user cancelled the operation
+            return 1; // on successfull input of all data
         }
     }
 
