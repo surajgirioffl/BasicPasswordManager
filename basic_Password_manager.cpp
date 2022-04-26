@@ -694,32 +694,9 @@ class addNewData
             cout << "\n\033[1;32m" << structMemberIndex << ". Enter " << dataMemberNameForUser << ": (NA allowed: " << isNaAllowed(structMemberIndex) << ")" << endl;
             cout << "\033[38;5;15m$ ";
             fflush(stdin);
+            if (structMemberIndex == 9)
+                // must allocate memory here for first time input
 
-            if (structMemberIndex == 9) // because we are using dynamic memory allocation for the same and we can realloc memory if size is greater than 100
-            {
-                // here we can't use cin.getline() because it required fixed size
-                short charCounter = 0; // character counter
-                short flag = 1;        // count how many times memory of 100*(sizeof(char)) allocated
-                /*now taking input from user*/
-                while (true)
-                {
-                    structVarCurrentDataMemberAddress[charCounter++] = cin.get();
-
-                    if (*structVarCurrentDataMemberAddress = '\0') // if user don't want to write character or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
-                    {
-                        strcpy(structVarCurrentDataMemberAddress, "N/A");
-                        cout << "\033[1;36m[---NA---]" << endl;
-                    }
-
-                    if (structVarCurrentDataMemberAddress[charCounter - 1] == '\n') //-1 because we have incremented the variable
-                        break;
-                    if (charCounter == (flag * 100) - 1) // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
-                        structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
-                }
-                structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
-            }
-
-            else
                 cin.getline(structVarCurrentDataMemberAddress, 100);
             // cin.getline(structureVar, 100); // here structureVar==var.varName is not true. structureVar is a simple string while var.xyz is the variable inside structure. So, we can't perform this operation
 
@@ -881,6 +858,29 @@ class addNewData
                 }
                 else
                     break; // on successfull input
+            }
+            else if (structMemberIndex == 9) // for 'moreInfo' of current input type // because we are using dynamic memory allocation for the same and we can realloc memory if size is greater than 100
+            {
+                // here we can't use cin.getline() because it required fixed size
+                short charCounter = 0; // character counter
+                short flag = 1;        // count how many times memory of 100*(sizeof(char)) allocated
+                /*now taking input from user*/
+                while (true)
+                {
+                    structVarCurrentDataMemberAddress[charCounter++] = cin.get();
+
+                    if (*structVarCurrentDataMemberAddress = '\0') // if user don't want to write character or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
+                    {
+                        strcpy(structVarCurrentDataMemberAddress, "N/A");
+                        cout << "\033[1;36m[---NA---]" << endl;
+                    }
+
+                    if (structVarCurrentDataMemberAddress[charCounter - 1] == '\n') //-1 because we have incremented the variable
+                        break;
+                    if (charCounter == (flag * 100) - 1) // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
+                        structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
+                }
+                structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
             }
             else // means user has written something
                 break;
