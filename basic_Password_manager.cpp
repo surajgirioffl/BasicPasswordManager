@@ -691,7 +691,7 @@ class addNewData
 
         while (true)
         {
-            cout << "\n\033[1;32m" << structMemberIndex << ". Enter " << dataMemberNameForUser << ":" << endl;
+            cout << "\n\033[1;32m" << structMemberIndex << ". Enter " << dataMemberNameForUser << ": (NA allowed: " << isNaAllowed(structMemberIndex) << ")" << endl;
             cout << "\033[38;5;15m$ ";
             fflush(stdin);
 
@@ -854,7 +854,7 @@ class addNewData
                 /*actually we can check each character in number input and display error at the same time if character is not a number. but if we do so then command input (like prv, @, exit etc) will not work. So, we have to take input on the user choice and we will check the possibility of error after checking the possibility of commnads in input*/
                 short counter = 0;
                 short i = 0;
-                while (structVarCurrentDataMemberAddress[i++] != '\0')
+                while (structVarCurrentDataMemberAddress[i] != '\0')
                 {
                     /*actually this block of code was written before input from cin.getline() but if we check the input character by character in case of number then the commands will not work. Due to which after complete input of number, we will check the the possibility of error in input of number*/
                     // below commented lines are cut from above because of the same that mentioned in previous line */f
@@ -865,16 +865,22 @@ class addNewData
                     //      cout << "\033[1;36m[---NA---]" << endl;
                     //  }
 
-                    if (!isdigit(structVarCurrentDataMemberAddress[i])) /*isdigit() returns non-zero if argument is 0-9 else returns 0*/
+                    if (!isdigit(structVarCurrentDataMemberAddress[i++])) /*isdigit() returns non-zero if argument is 0-9 else returns 0*/
                     {
-                        cout << "\033[1;31mError: Invalid input. Only 10 digits are allowed and each of them must be in the range 0-9\033[0m" << endl;
+                        cout << "\033[1;31mError: Invalid input. Only digits are allowed (0-9)\033[0m" << endl;
                         counter = 0; // restarting
                         break;
                     }
                     counter++;
                 }
                 if (counter == 0 || counter > 10) // means error in input of number (greater than 10 means error in input of number)
-                    continue;
+                {
+                    if (counter > 10) // it only execute if counter>10
+                        cout << "\033[1;31mError: Invalid mobile number. Mobile number must of 10 digits." << endl;
+                    continue; // for both case restart the input process
+                }
+                else
+                    break; // on successfull input
             }
             else // means user has written something
                 break;
