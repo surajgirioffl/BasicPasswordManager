@@ -54,6 +54,7 @@
 #include <w32api.h>
 #include <unistd.h>
 using namespace std;
+typedef short let; // using 'let' at the place of short
 int create_folder(char *path, char *new_folder_name);
 
 /*I have tried this.
@@ -694,9 +695,49 @@ class addNewData
             cout << "\n\033[1;32m" << structMemberIndex << ". Enter " << dataMemberNameForUser << ": (NA allowed: " << isNaAllowed(structMemberIndex) << ")" << endl;
             cout << "\033[38;5;15m$ ";
             fflush(stdin);
-            if (structMemberIndex == 9)
-                // must allocate memory here for first time input
 
+            /**
+             **PROBLEM
+             *char *moreInfo; -> indexNumber=9. This data member is a char pointer because size of moreInfo can't be fixed.
+             *we also need to insure that during input in each data member user can write any command like prv, exit, @, #,clear, na, #cmd etc.
+             *so, during input in all others data member, we simply take data in same because they are allocated statically. So, if any of command written by user then from if-else-if ladder process the respective work.
+             *but here, there is no fixed size of memory
+             *If we take input for this data member and terminate the same after completion before visiting the if-else-if ladder then command will not work and it's a huge issue
+             *we can't use default input method for this data member i.e cin.getline(xxxx...,100) because there is no limit of size for this data member but in default the size if 100.
+             *If we use default by allocating 100 bytes before it then also cin.getline() will not terminate after 100 characters and after 99 chracters rest will ignored but we don't have to do so. We have to store all characters. In others data members, it's fixed that their size will less than 100
+             **SOLUTION
+             *we will allocate the memory of size = size of maxLengthcommand i.e 5 for 'clear' command + 1 = 6 (for adding '\0' in last of string because it's compulsory to know the last char of string when function like strcmp() etc will use it in if-else-if ladder for checking of Command or other.)
+             *store the characters one by one
+             *possible conditions:
+             *1. command written by user and pressed enter (na,exit,clear,#cmd,#,@,prv etc)
+             *2. user don't write anything and press enter means NA applicable here (user can also write NA but it's also option to simply don't write anything and press enter then it will accepted as NA)
+             *3. user written 'moreInfo' but it's size is 5 or below
+             *4. user continue writing characters i.e more that 5 characters
+             *Process:
+             *terminate the loop here (before if-else-ladder or default input i.e cin.getline()) if no. of chracters crossed 5 or user press enter within 5 characters (must add NULL in last)
+             *after this control will go through if-else-if ladder
+             *if command matched then respective operation will be performed
+             *if command doesn't match and enter is pressed AND if command doesn't match and user continue writing characters
+             *In case of above line, write code for terminate (if command doesn't match and enter is pressed) Or continue taking input (if command doesn't match and user continue writing characters') in one of last (after command checking) of if-else-if ladder
+             */
+            if (structMemberIndex == 9)
+            {
+                structVarCurrentDataMemberAddress = (char *)calloc(6, sizeof(char)); // allocating memory for "char* moreInfo" particularly for command point of view. i.e user may write commands (prv,clear,exit etc) instead of 'moreInfo'
+                let i;
+                for (i = 0; i < 5; i++)
+                {
+                    structVarCurrentDataMemberAddress[i] = cin.get();
+                    if (structVarCurrentDataMemberAddress[i] == '\n') // if user pressed enter without writing 5 characters
+                    {
+                        structVarCurrentDataMemberAddress[i] = '\0'; // adding newline in last of string
+                        break;
+                    }
+                }
+                /*if termination of loop i.e if user have written 5 characters*/
+                if (i == 5)                                      // means loop terminated due condition fails
+                    structVarCurrentDataMemberAddress[i] = '\0'; // adding newline in last of string
+            }
+            else
                 cin.getline(structVarCurrentDataMemberAddress, 100);
             // cin.getline(structureVar, 100); // here structureVar==var.varName is not true. structureVar is a simple string while var.xyz is the variable inside structure. So, we can't perform this operation
 
@@ -861,26 +902,45 @@ class addNewData
             }
             else if (structMemberIndex == 9) // for 'moreInfo' of current input type // because we are using dynamic memory allocation for the same and we can realloc memory if size is greater than 100
             {
+                /*we have already taken input from user up to 5 chracters and in all case last character will be NULL (if user written all 5 characters then NULL will 6th character on 5th index)*/
+                /*control will come in this block only if-else ladder only if user has not written any command in the input*/
+
+                /**we have two possibilities to perform operation:
+                 *1. if NULL found within 5 chracters (means user has written something which is not command(because command already checked above in if-else ladder) and less than 5 chracters)
+                 *2. if NULL found as 6th character i.e on 5th index (this NULL is added by me for string creation for string related operations). Means user continue writing characters without pressing enter till 5th character
+                 *if condition 1 satisfied then we will break the loop (because moreInfo mentioned by user within 5 chracters)
+                 *if condition 2 satisfied then we will continue taking input from user until newline character encountered (input will be taken from index 5 i.e 6th position. Because we have manually add NULL in last. So, we assign the same by next data)
+                 */
+                /*-------------------------------FOR FIRST CONDITION-----------------------------------*/
+                bool breakTheInputLoop = false; // flag to break the loop
+                for (let i = 0; i < 5; i++)
+                {
+                    if (structVarCurrentDataMemberAddress[i] == NULL) // means info length is within the 5 characters
+                    {
+                        breakTheInputLoop++;
+                        break; // for break the inner for loop
+                    }
+                }
+                if (breakTheInputLoop)
+                    break; // to break the outermost loop
+
+                /*-------------------------------FOR SECOND CONDITION-----------------------------------*/
                 // here we can't use cin.getline() because it required fixed size
-                short charCounter = 0; // character counter
-                short flag = 1;        // count how many times memory of 100*(sizeof(char)) allocated
+                short charCounter = 5;                                                                                      // character counter//On the basis of above, 5 characters are already input by user i.e from index 0 to 4. So, we will take input from index 5
+                short flag = 1;                                                                                             // count how many times memory of 100*(sizeof(char)) allocated
+                structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, 100 * sizeof(char)); /*6 bytes already allocated in beginning. So, now we are incrementing the space allocated to 100 bytes*/
                 /*now taking input from user*/
                 while (true)
                 {
                     structVarCurrentDataMemberAddress[charCounter++] = cin.get();
 
-                    if (*structVarCurrentDataMemberAddress = '\0') // if user don't want to write character or no info available (NA allowed here. So, if user write then no issue but if user press enter then we need to add NA)
-                    {
-                        strcpy(structVarCurrentDataMemberAddress, "N/A");
-                        cout << "\033[1;36m[---NA---]" << endl;
-                    }
-
                     if (structVarCurrentDataMemberAddress[charCounter - 1] == '\n') //-1 because we have incremented the variable
-                        break;
-                    if (charCounter == (flag * 100) - 1) // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
+                        break;                                                      // to break the inner while loop
+                    if (charCounter == (flag * 100) - 1)                            // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
                         structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
                 }
                 structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
+                break;                                                 // to break the outer while loop that input loop for current data member
             }
             else // means user has written something
                 break;
