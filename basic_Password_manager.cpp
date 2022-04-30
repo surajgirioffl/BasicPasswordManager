@@ -730,6 +730,7 @@ class addNewData
             {
                 structVarCurrentDataMemberAddress = (char *)calloc(6, sizeof(char)); // allocating memory for "char* moreInfo" particularly for command point of view. i.e user may write commands (prv,clear,exit etc) instead of 'moreInfo'
                 let i;
+                fflush(stdin); // flushing the standard input stream and it's buffer
                 for (i = 0; i < 5; i++)
                 {
                     structVarCurrentDataMemberAddress[i] = cin.get();
@@ -770,7 +771,7 @@ class addNewData
                     cout << "\033[1;31mWarning: Website must have a url." << endl;
                     cout << "\033[1;32mBut if you are inserting info for any application then it is valid here." << endl
                          << "(see application user manual for more details..)\033[0m" << endl;
-                    strcpy(structVarCurrentDataMemberAddress, "N/A");
+                    strcpy(structVarCurrentDataMemberAddress, "NA");
                     cout << "\033[1;36m[---NA---]" << endl;
                     break;
                 }
@@ -837,7 +838,7 @@ class addNewData
             // start
             /*we have to check twice for password*/
             {
-                char againPassword[100];
+                char *againPassword = (char *)calloc(100, sizeof(char)); // allocating memory for taking the password again from user
                 cout << "\n\033[1;32mWrite your password again: \033[1;31m(Don't write any command here.)" << endl;
                 cout << "\033[38;5;15m$ ";
                 cin.getline(againPassword, 100);
@@ -845,6 +846,7 @@ class addNewData
                 if (strcmp(againPassword, structVarCurrentDataMemberAddress) == 0)
                 {
                     cout << "\n\033[1;32mExcellent. Your password saved successfully........." << endl;
+                    free(againPassword); // free memory allocated for taking the password again from user
                     break;
                 }
 
