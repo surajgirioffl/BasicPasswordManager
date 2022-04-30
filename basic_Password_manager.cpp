@@ -57,6 +57,10 @@ using namespace std;
 typedef short let; // using 'let' at the place of short
 int create_folder(char *path, char *new_folder_name);
 
+/**FIX it
+ * infinite loop when user write wrong choice whose length is more than 10 chracters in choice of main menu
+ */
+
 /*I have tried this.
  *"C:Users\\Basic Password Manager"
  *but we need administrative permission to created folder in users directory
@@ -438,6 +442,7 @@ class addNewData
      *
      */
 
+    // it's not used in program currently
     /*1. input of website name. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
     int inputWebsiteName()
     {
@@ -486,6 +491,7 @@ class addNewData
         return 1; // on successfull execution
     }
 
+    // it's not using in program currently
     /*2. input of website url. returns 0 if user cancel the operation and exit else returns 1 on successfull input */
     int inputWebsiteUrl()
     {
@@ -567,7 +573,7 @@ class addNewData
             strcpy(dataMemberNameForUser, "username if applicable"); // username
             break;
         case 7:
-            strcpy(dataMemberNameForUser, "mobile number if applicable"); // mobile number
+            strcpy(dataMemberNameForUser, "mobile number if applicable (country code is not allowed. +91 is default)"); // mobile number
             break;
         case 8:
             strcpy(dataMemberNameForUser, "full name of user"); // user full name
@@ -686,7 +692,7 @@ class addNewData
         case 9:
             structVarCurrentDataMemberAddress = var.moreInfo;
             /*in this case we have to allocate memory because it's not static */
-            structVarCurrentDataMemberAddress = (char *)calloc(100, sizeof(char));
+            // structVarCurrentDataMemberAddress = (char *)calloc(100, sizeof(char));//we will allocate memory later
             break;
         }
 
@@ -720,7 +726,7 @@ class addNewData
              *if command doesn't match and enter is pressed AND if command doesn't match and user continue writing characters
              *In case of above line, write code for terminate (if command doesn't match and enter is pressed) Or continue taking input (if command doesn't match and user continue writing characters') in one of last (after command checking) of if-else-if ladder
              */
-            if (structMemberIndex == 9)
+            if (structMemberIndex == 9) // in case of moreInfo
             {
                 structVarCurrentDataMemberAddress = (char *)calloc(6, sizeof(char)); // allocating memory for "char* moreInfo" particularly for command point of view. i.e user may write commands (prv,clear,exit etc) instead of 'moreInfo'
                 let i;
@@ -749,6 +755,7 @@ class addNewData
                 continue;                                                                                                          /* continue to inner while loop*/
             if (strcmp(structVarCurrentDataMemberAddress, "na") == 0 || strcmp(structVarCurrentDataMemberAddress, "NA") == 0 || strcmp(structVarCurrentDataMemberAddress, "\0") == 0) // if user don't have any info for current choice or user simply press enter without writing anything (it may be possible that that input type is compulsory)
             {
+                /*below 2 block of if-else-if are not compulsory but when functions was was alone for each input type then it was written. So, I haven't deleted it.*/
                 if (structMemberIndex == 1)
                 {
                     cout << "\033[1;31mError: Website/Application must have a name." << endl;
@@ -891,9 +898,9 @@ class addNewData
                     }
                     counter++;
                 }
-                if (counter == 0 || counter > 10) // means error in input of number (greater than 10 means error in input of number)
+                if (counter == 0 || counter != 10) // means error in input of number (greater than or less than 10 digits means error in input of number)
                 {
-                    if (counter > 10) // it only execute if counter>10
+                    if (counter != 10) // it only execute if counter not equal to 10 means user write mobile no. of digits less than/more than 10 or others characters than digits which are not allowed
                         cout << "\033[1;31mError: Invalid mobile number. Mobile number must of 10 digits." << endl;
                     continue; // for both case restart the input process
                 }
@@ -915,7 +922,7 @@ class addNewData
                 bool breakTheInputLoop = false; // flag to break the loop
                 for (let i = 0; i < 5; i++)
                 {
-                    if (structVarCurrentDataMemberAddress[i] == NULL) // means info length is within the 5 characters
+                    if (structVarCurrentDataMemberAddress[i] == '\0') // means info length is within the 5 characters
                     {
                         breakTheInputLoop++;
                         break; // for break the inner for loop
@@ -1001,12 +1008,26 @@ class addNewData
         }
     }
 
+    void testerDisplay()
+    {
+        cout << "\nEntered Info are following:" << endl;
+        cout << "Application/website Name = " << var.websiteName << endl;
+        cout << "Websit URL = " << var.websiteUrl << endl;
+        cout << "website/app category = " << var.category << endl;
+        cout << "password = " << var.password << endl;
+        cout << "Email = " << var.email << endl;
+        cout << "Mobile Number = " << var.mobileNumber << endl;
+        cout << "More info = " << var.moreInfo << endl;
+        cout << "Full Name = " << var.userFullName << endl;
+    }
+
 public:
     /*returns 1 on successfull input, 0 on either use cancel the operation or exit or any error*/
     int insertion()
     {
         if (takeInputFromUserMainMenu()) // returns 1 on successfull input else returns 0
         {
+            testerDisplay();
         }
         else
             return 0; // user cancelled the current input operation
