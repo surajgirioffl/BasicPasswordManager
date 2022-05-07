@@ -948,8 +948,9 @@ class addNewData
                     if (charCounter == (flag * 100) - 1)                            // realloc memory if allocated previous 100 bytes (if one block of char is 1 byte) used
                         structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
                 }
-                structVarCurrentDataMemberAddress[charCounter] = '\0'; // adding NULL as last character of string.
-                break;                                                 // to break the outer while loop that input loop for current data member
+                structVarCurrentDataMemberAddress[charCounter - 1] = '\0'; // adding NULL as last character of string.
+                var.moreInfo = structVarCurrentDataMemberAddress;
+                break; // to break the outer while loop that input loop for current data member
             }
             else // means user has written something
                 break;
