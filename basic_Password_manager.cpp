@@ -949,8 +949,8 @@ class addNewData
                         structVarCurrentDataMemberAddress = (char *)realloc(structVarCurrentDataMemberAddress, ++flag * 100 * sizeof(char));
                 }
                 structVarCurrentDataMemberAddress[charCounter - 1] = '\0'; // adding NULL as last character of string.
-                var.moreInfo = structVarCurrentDataMemberAddress;
-                break; // to break the outer while loop that input loop for current data member
+                var.moreInfo = structVarCurrentDataMemberAddress;          // this lines fixed the huge bug. The bug was "moreInfo of 'var' objet contains garbage data". Reason: we are assigning the address of var.moreInfo in 'structVarCurrentDataMemberAddress' and after using realloc() the base address changed (if memory required is greater than available memory in current segment of RAM) but in var.moreInfo the base address remains previous. So, data doesn't refect
+                break;                                                     // to break the outer while loop that input loop for current data member
             }
             else // means user has written something
                 break;
