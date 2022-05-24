@@ -85,7 +85,7 @@ class encryption
             requiredNumber = requiredNumber + number * power(10, exponent);
             exponent++;
         }
-        if (i == -1) // on successfull conversion
+        if (i == -1) // on successfully conversion
             return requiredNumber;
         return -1; // on error
     }
@@ -157,15 +157,14 @@ class encryption
         //         ch -= ;
         // }
     }
-    friend void encryptionClassFriend(encryption, char *);
 
 public:
     /**
-     *take password in 'password' and after encryption, assign the encrypted password in variable 'encryptedPassword' which is received via argument
+     *take password in 'password' and after encryption, assign the encrypted password in variable 'encryptedPassword' which is received via argument and returns the address of 'encryptedPassword'. Returing is compulsory because address may be changed in case dynamic memory allocation
      *Currently all characters are allowed in password. But I have found that ASCII value after 126 are not printing on powershell/cmd.
      *after operation must free the memory allocated for 'encryptedPassword'.
      */
-    void encryptPassword(char *password, long *encryptedPassword)
+    long *encryptPassword(char *password, long *encryptedPassword)
     {
         // encryptedPassword = NULL; // pointed to NULL. So, realloc allocate memory else realloc() behavior will be undefined. (If long* pointing anywhere which is not allocated by malloc/calloc/realloc)
         lengthOfPassword = strlen(password);
@@ -246,7 +245,7 @@ public:
         /*After end of all characters, for identification of end of password we are inserting '\0' i.e 0 (ASCII) after last character*/
         encryptedPassword = (long *)realloc(encryptedPassword, sizeof(long) * ++spaceRequired);
         encryptedPassword[encryptionIndex++] = '\0';
-
+        return encryptedPassword;
         // // testing
         // for (int i = 0; encryptedPassword[i] != '\0'; i++)
         // {
@@ -269,13 +268,6 @@ public:
     // }
 };
 
-void encryptionClassFriend(encryption a, char *string)
-{
-    char tempString[20];
-    a.convertDecimalToHex(string[0], tempString);
-    cout << tempString << endl;
-}
-
 /*decrypt the password which is encrypted by the class encryption of this program*/
 class decryption
 {
@@ -290,7 +282,7 @@ int main()
     cout << "write password:" << endl;
     cin.getline(var, 10);
     cout << "Address= " << (int)encryptedPassword << endl; // testing
-    obj.encryptPassword(var, encryptedPassword);
+    encryptedPassword = obj.encryptPassword(var, encryptedPassword);
     cout << "\nAddress= " << (int)encryptedPassword << endl; // testing
     cout << "encrypted password = ";
     for (int i = 0; encryptedPassword[i] != '\0'; i++)
