@@ -35,7 +35,7 @@ class encryption
         free(tempString); // free memory
     }
 
-    /*revese the number received via argument and returns the reversed number*/
+    /*reverse the number received via argument and returns the reversed number*/
     int reverseNumber(int number)
     {
         int reverse = 0;
@@ -99,16 +99,16 @@ class encryption
             int r = number % 16; // for remainder
             number /= 16;        // for quotient
             if (r <= 9)
-                convertedDataInHex[i++] = 48 + r; // we have to store in character 0-9 i.e 48 - 57 (ASCII) not in number directly. If we assing r=6 then it will stored as ASCII 6 which is unprintable chars
+                convertedDataInHex[i++] = 48 + r; // we have to store in character 0-9 i.e 48 - 57 (ASCII) not in number directly. If we assign r=6 then it will stored as ASCII 6 which is unprintable chars
             else                                  // i.e if (r >= 10)
                 convertedDataInHex[i++] = 55 + r; // we have to print r as character from A-E
             /*55 Because
-             *In hexadecimal if reamainder is 10 then it will 'A', for 11 it will 'B' and so on till for '15' it will 'F'.
+             *In hexadecimal if remainder is 10 then it will 'A', for 11 it will 'B' and so on till for '15' it will 'F'.
              *so simply I have used ASCII. If r=10 means 'A' then add r in 55 i.e 55+10 = 65 = 'A' (ASCII)
              */
         }
         convertedDataInHex[i] = '\0'; // adding NULL in last of string
-        /*buttom to up i.e last to 1st remainders are used to be written in hexadecimal*/
+        /*bottom to up i.e last to 1st remainders are used to be written in hexadecimal*/
         /*so simply reverse the array*/
         reverseString(convertedDataInHex);
     }
@@ -126,7 +126,7 @@ class encryption
                                                  /*if we write directly r for assign then 'convertedDataInBinary' is char*. So, r will taken as character i.e in ASCII. Let r=6 then it will taken as ASCII 6 but we have write it as '6'*/
         }
         convertedDataInBinary[i] = '\0'; // adding NULL in last of string
-                                         /*buttom to up i.e last to 1st remainders are used to be written in binary*/
+                                         /*bottom to up i.e last to 1st remainders are used to be written in binary*/
         /*so simply reverse the array*/
         reverseString(convertedDataInBinary);
     }
@@ -160,7 +160,7 @@ class encryption
 
 public:
     /**
-     *take password in 'password' and after encryption, assign the encrypted password in variable 'encryptedPassword' which is received via argument and returns the address of 'encryptedPassword'. Returing is compulsory because address may be changed in case dynamic memory allocation
+     *take password in 'password' and after encryption, assign the encrypted password in variable 'encryptedPassword' which is received via argument and returns the address of 'encryptedPassword'. Returning is compulsory because address may be changed in case dynamic memory allocation
      *Currently all characters are allowed in password. But I have found that ASCII value after 126 are not printing on powershell/cmd.
      *after operation must free the memory allocated for 'encryptedPassword'.
      */
@@ -191,14 +191,14 @@ public:
          *1. let password is "suraj";
          *2. revered. Now password = "jarus";
          **-------**ALL BELOW STEPS IS FOR 'j' i.e 1st character. same steps will be iterated for next characters
-         *3. Base encryption of 'j' (ASCII = 106). length of password = 5; so, j=106-15=91 ('['). Now all encryption will be perfrom on ASCII 91
+         *3. Base encryption of 'j' (ASCII = 106). length of password = 5; so, j=106-15=91 ('['). Now all encryption will be perform on ASCII 91
          *4. Convert 91 to hexadecimal. result=5,11 i.e 5,B and it stored in string as {'5','B','\0'} i.e in ASCII {53,66,0}
          **now convert all sub-character of hex i.e result[0,1] each to binary.
          *5. Binary of result[0] i.e 53 is {'1','1','0','1','0',1','\0'}.
          *6. now convert the binary of result[0] to number i.e 1101010.
          *7. reverse the number i.e 0101011 (1s complement of binary)
          *8. save in 1st shell of long* encryptedPassword
-         ** now perfrom the same operation (step 5 to 7) for all other sub-character of hex i.e till result[last index].
+         ** now perform the same operation (step 5 to 7) for all other sub-character of hex i.e till result[last index].
          *9. while(result[i]!=result[last_index]), continue the loop from step 5 to 8 for nex sub-character of hex
          *10. Add an extra character '\r' in end of encryption of 1st char for identification of end of one character
          **ITERATE FROM STEP 3 TO 10 FOR NEXT CHARACTERS OF PASSWORD

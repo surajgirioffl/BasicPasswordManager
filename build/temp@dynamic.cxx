@@ -18,7 +18,7 @@ int main()
     // what free do why 0 printing
 
     x = (int *)malloc(100);
-    cout << "Address at 2 = " << x << endl; // here x contains new base address but previous base address is exist but we don't have any variable which contains the base address of previos location
+    cout << "Address at 2 = " << x << endl; // here x contains new base address but previous base address is exist but we don't have any variable which contains the base address of previous location
 
     x = (int *)calloc(1, 100);
     cout << "Address at 3 = " << x << endl;
@@ -32,7 +32,7 @@ int main()
     x = (int *)realloc(x, 1100);
     cout << "Address at 6 = " << x << endl;
 
-    cout << "x Changed due to allocting again but it's data are :"
+    cout << "x Changed due to allocating again but it's data are :"
          << endl;
     for (int i = 0; i < 20; i++)
         cout << y[i] << " ";
